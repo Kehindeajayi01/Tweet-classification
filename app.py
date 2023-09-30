@@ -6,10 +6,10 @@ import pickle
 import numpy as np
 
 # Load the trained model
-model = load_model("C:/Users/ajayi/OneDrive/Desktop/Sample_deployment/Sentiment_Analysis/model.h5")
+model = load_model("model.h5")
 
 # Load the saved tokenizer
-with open('C:/Users/ajayi/OneDrive/Desktop/Sample_deployment/Sentiment_Analysis/tokenizer.pkl', 'rb') as handle:
+with open('tokenizer.pkl', 'rb') as handle:
     tokenizer = pickle.load(handle)
 
 # Define the preprocess_text function
