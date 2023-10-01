@@ -19,7 +19,7 @@ def preprocess_text(text):
     
     # Pad the sequences to a fixed length (use the same sequence length as during training)
     #max_sequence_length = ...  # Replace with the sequence length used during training
-    padded_tokens = pad_sequences(tokens, maxlen = 17)
+    padded_tokens = pad_sequences(tokens, maxlen = 100)
     
     return padded_tokens[0]
 
