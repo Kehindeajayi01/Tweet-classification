@@ -1,9 +1,11 @@
-import streamlit as st
+from flask import Flask, request, render_template
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import pickle
 import numpy as np
+
+app = Flask(__name__)
 
 # Load the trained model
 model = load_model("model.h5")
@@ -19,39 +21,33 @@ def preprocess_text(text):
     
     # Pad the sequences to a fixed length (use the same sequence length as during training)
     #max_sequence_length = ...  # Replace with the sequence length used during training
-    padded_tokens = pad_sequences(tokens, maxlen = 100)
+    padded_tokens = pad_sequences(tokens, maxlen=100)
     
     return padded_tokens[0]
 
+@app.route("/", methods=["GET", "POST"])
+def predict():
+    sentiment = ""
 
-st.title('Sentiment Analysis App')
+    if request.method == "POST":
+        user_input = request.form["user_input"]
 
-# Create a text input widget for user input
-user_input = st.text_area('Enter text for sentiment analysis', '')
+        # Preprocess the user input
+        processed_input = preprocess_text(user_input)
 
-# Create a button to trigger sentiment analysis
-if st.button('Analyze Sentiment'):
-    # Preprocess the user input (you should customize this based on your model's requirements)
-    # For example, tokenize, pad sequences, and convert text to numerical data
-    # Ensure that your preprocessing matches what was done during training
+        # Make sentiment prediction using the loaded model
+        prediction = model.predict(np.array([processed_input]))
 
-    # Preprocess the user input
-    processed_input = preprocess_text(user_input)
+        # Map the prediction to sentiment labels
+        average_prediction = prediction.mean()
 
-    # Make sentiment prediction using the loaded model
-    prediction = model.predict(np.array([processed_input]))
+        # Make a decision based on the average_prediction value
+        if average_prediction > 0.5:
+            sentiment = 'Negative'
+        else:
+            sentiment = 'Positive'
 
-    # Map the prediction to sentiment labels
-    # sentiment = 'Positive' if prediction[0] > 0.5 else 'Negative'
-    # Calculate the average prediction value
-    average_prediction = prediction.mean()
+    return render_template("index.html", sentiment=sentiment)
 
-    # Make a decision based on the average_prediction value
-    if average_prediction > 0.5:
-        sentiment = 'Negative'
-    else:
-        sentiment = 'Positive'
-
-
-    # Display the sentiment prediction
-    st.write(f'Sentiment: {sentiment}')
+if __name__ == "__main__":
+    app.run()
