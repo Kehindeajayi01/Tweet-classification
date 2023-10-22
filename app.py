@@ -25,7 +25,7 @@ def preprocess_text(text):
     
     return padded_tokens[0]
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/predict", methods=["GET", "POST"])
 def predict():
     sentiment = ""
 
